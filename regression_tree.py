@@ -81,16 +81,28 @@ def variance(rows):
 
 
 def prediction(leaf_labels):
-    total = 0
-    result = {}
-    for label, count in leaf_labels.items():
-        total += count
-        result[label] = count
+    if(type(leaf_labels) != float):
+        total = 0
+        result = {}
+        for label, count in leaf_labels.items():
+            print(count)
+            print(label)
+            total += count
+            result[label] = count
 
-    for label, val in result.items():
-        result[label] = str(int(result[label]/total * 100))+"%"
+        for label, val in result.items():
+            result[label] = str(int(result[label]/total * 100))+"%"
 
-    return result
+        return result
+    else:
+        return(leaf_labels)
+
+
+def averagecounts(rows):
+    curr_sum = 0.0
+    for row in rows:
+        curr_sum += float(row[len(row) - 1])
+    return round(curr_sum / len(rows),3)
 
 
 def classify(observation, tree):
@@ -142,7 +154,7 @@ def mdclassify(observation, tree):
             return mdclassify(observation, branch)
 
 
-def buildtree(rows, scoref=entropy,
+def buildtree(rows, scoref=variance,
               min_gain=0, min_samples=0):
     if len(rows) == 0:
         return decisionnode()
@@ -180,7 +192,7 @@ def buildtree(rows, scoref=entropy,
         return decisionnode(col=best_criteria[0], value=best_criteria[1],
                             tb=trueBranch, fb=falseBranch)
     else:
-        return decisionnode(results=uniquecounts(rows))
+        return decisionnode(results=averagecounts(rows))
 
 
 def max_depth(tree):

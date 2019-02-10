@@ -2,14 +2,14 @@ import dtree_build
 import sys
 import csv
 import discretize
-import regression_tree
+
 
 def main(col_names=None):
     # parse command-line arguments to read the name of the input csv file
     # and optional 'draw tree' parameter
     if len(sys.argv) < 2:  # input file name should be specified
         print ("Please specify input csv file name")
-        retur01
+        return
 
     csv_file_name = sys.argv[1]
 
@@ -19,26 +19,19 @@ def main(col_names=None):
         for row in readCSV:
             data.append(list(row))
 
-    data = discretize.sort_variance(data)
+    data = discretize.sort_entropy(data)
 
     print("Total number of records = ",len(data))
-    tree = regression_tree.buildtree(data, min_gain =0.006, min_samples = 5)
+    tree = dtree_build.buildtree(data, min_gain =0.01, min_samples = 5)
 
-    regression_tree.printtree(tree, '', col_names)
+    dtree_build.printtree(tree, '', col_names)
 
-    print("1: ", regression_tree.classify(['tenured', 'not minority', 'male', 'english', '60', '20', 'upper', '7', '4.3'], tree))
-    print("2: ", regression_tree.classify(['tenured track', 'not minority', 'female', 'english', '50', '25', 'upper', '5', '4'], tree))
-    print("3: ", regression_tree.classify(['teaching', 'not minority', 'male', 'english', '30', '15', 'upper', '8', '3.8'], tree))
-
-
-
-
-    max_tree_depth = regression_tree.max_depth(tree)
+    max_tree_depth = dtree_build.max_depth(tree)
     print("max number of questions=" + str(max_tree_depth))
 
     if len(sys.argv) > 2: # draw option specified
-        import rtree_draw
-        rtree_draw.drawtree(tree, jpeg=csv_file_name+'.jpg')
+        import dtree_draw
+        dtree_draw.drawtree(tree, jpeg=csv_file_name+'.jpg')
 
     if len(sys.argv) > 3:  # create json file for d3.js visualization
         import json
